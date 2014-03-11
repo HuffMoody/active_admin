@@ -40,13 +40,26 @@ module ActiveAdmin
     #     end
     #   end
     #
+    # Or
+    #
+    #   permit_params!
+    #
     def permit_params(*args, &block)
       resource_sym = config.resource_name.singular.to_sym
 
       controller do
         define_method :permitted_params do
-          params.permit resource_sym =>
-                        block ? instance_exec(&block) : args
+          params.require(resource_sym).permit(block ? instance_exec(&block) : args)
+        end
+      end
+    end
+
+    def permit_params!
+      resource_sym = config.resource_name.singular.to_sym
+
+      controller do
+        define_method :permitted_params do
+          params.require(resource_sym).permit!
         end
       end
     end
